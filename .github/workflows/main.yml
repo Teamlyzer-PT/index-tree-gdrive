@@ -2,18 +2,14 @@ name: Atualizar Drive Tree
 
 on:
   schedule:
-    # Corre de hora a hora (ao minuto 0)
     - cron: '0 * * * *'
-  # Permite-te clicar no botão para correr manualmente (Passo 4)
   workflow_dispatch:
 
-# Permissões necessárias para publicar no GitHub Pages
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Garante que se correres duas vezes seguidas, a mais antiga cancela para não haver conflitos
 concurrency:
   group: "pages"
   cancel-in-progress: false
@@ -22,7 +18,7 @@ jobs:
   build-and-deploy:
     environment:
       name: github-pages
-      url: ${{ steps: deployment.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do código
@@ -56,8 +52,6 @@ jobs:
       - name: Fazer upload dos ficheiros gerados
         uses: actions/upload-pages-artifact@v3
         with:
-          # Assume que o teu script gera os ficheiros HTML na raiz ou numa pasta. 
-          # Se o script criar uma pasta específica (ex: 'dist' ou 'public'), muda o '.' para o nome da pasta.
           path: '.'
 
       - name: Publicar no GitHub Pages
