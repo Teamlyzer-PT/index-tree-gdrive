@@ -1,0 +1,65 @@
+name: Atualizar Drive Tree
+
+on:
+  schedule:
+    # Corre de hora a hora (ao minuto 0)
+    - cron: '0 * * * *'
+  # Permite-te clicar no botão para correr manualmente (Passo 4)
+  workflow_dispatch:
+
+# Permissões necessárias para publicar no GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Garante que se correres duas vezes seguidas, a mais antiga cancela para não haver conflitos
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps: deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+          cache: 'pip'
+
+      - name: Instalar dependências
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            echo "Aviso: requirements.txt não encontrado!"
+          fi
+
+      - name: Executar o script do Drive Tree
+        env:
+          GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
+          DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+          COMPANY_NAME: ${{ vars.COMPANY_NAME }}
+        run: |
+          python generate.py
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Fazer upload dos ficheiros gerados
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Assume que o teu script gera os ficheiros HTML na raiz ou numa pasta. 
+          # Se o script criar uma pasta específica (ex: 'dist' ou 'public'), muda o '.' para o nome da pasta.
+          path: '.'
+
+      - name: Publicar no GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
