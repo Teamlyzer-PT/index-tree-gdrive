@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teamlyzer - Índice Seguro</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --border: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-light: #eff6ff;
+  --row-hover: #f1f5f9;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 1000px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  display: none; /* Escondido ate fazer login */
+}
+
+#login-screen {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  text-align: center;
+  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  margin-top: 10vh;
+}
+
+.login-logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.login-logo span { color: var(--text-muted); font-weight: 400; }
+
+.login-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+}
+
+.error-msg {
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+  display: none;
+}
+
+header { padding: 2rem 2.5rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.brand h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+.brand h1 span { color: var(--text-muted); font-weight: 400; }
+.stats { font-size: 0.85rem; color: var(--text-muted); text-align: right; line-height: 1.5; }
+.search-hero { padding: 1.5rem 2.5rem; background: #ffffff; border-bottom: 1px solid var(--border); }
+.search-wrapper { position: relative; width: 100%; }
+.search-wrapper input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 0.85rem 1rem 0.85rem 2.75rem; color: var(--text-main); font-size: 0.95rem; outline: none; }
+.search-wrapper input:focus { background: #ffffff; border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-light); }
+.search-wrapper .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+.toolbar { padding: 0.75rem 2.5rem; background: #fafafa; border-bottom: 1px solid var(--border); display: flex; gap: 0.5rem; align-items: center; }
+.toolbar button { background: #ffffff; color: #334155; border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; }
+.toolbar button:hover { background: var(--row-hover); }
+.toolbar button.btn-primary { margin-left: auto; background: var(--accent); color: #ffffff; border-color: var(--accent); }
+.tree-container { padding: 1.5rem 2.5rem 3rem; min-height: 400px; }
+.r { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.6rem; border-radius: 6px; font-size: 0.9rem; }
+.r:hover { background: var(--row-hover); }
+.svg-ic { width: 18px; height: 18px; display: block; }
+.i { flex-shrink: 0; width: 18px; }
+.s { width: 18px; display: inline-block; }
+.t { flex-shrink: 0; width: 18px; text-align: center; cursor: pointer; color: var(--text-muted); font-size: 0.6rem; transition: transform 0.2s ease; user-select: none; }
+.t.open { transform: rotate(90deg); }
+.fn { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.fl { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fl a { color: #334155; text-decoration: none; }
+.fl a:hover { color: var(--accent); }
+.m { font-size: 0.75rem; color: var(--text-muted); flex-shrink: 0; }
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+.ch { margin-left: 1.2rem; border-left: 1px solid var(--border); overflow: hidden; }
+.ch.collapsed { display: none; }
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(20px); background: #0f172a; color: #ffffff; font-size: 0.8rem; padding: 0.6rem 1.5rem; border-radius: 8px; opacity: 0; transition: all 0.3s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-logo">Teamlyzer<span>/</span>drive</div>
+  <div class="login-desc">Autentica-te com a tua conta Google profissional para aceder aos documentos.</div>
+  <div id="error-box" class="error-msg"></div>
+  <div style="display: flex; justify-content: center;">
+    <div id="g_id_onload"
+         data-client_id="136239707885-cam3hetad870ueepr90dgobb9ofmsfl7.apps.googleusercontent.com"
+         data-context="signin"
+         data-ux_mode="popup"
+         data-callback="handleCredentialResponse"
+         data-auto_select="false"
+         data-close_on_tap_outside="false">
+    </div>
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="rectangular"
+         data-theme="outline"
+         data-text="signin_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
+  </div>
+</div>
+
+<div class="app-container" id="app-content">
+  <header>
+    <div class="brand"><h1>Teamlyzer<span>/</span>drive</h1></div>
+    <div class="stats">
+      <strong>9</strong> pastas &bull; <strong>31</strong> ficheiros<br>
+      <span style="font-size:0.75rem;">Atualizado em: 2026-05-26 15:27 UTC</span>
+    </div>
+  </header>
+
+  <div class="search-hero">
+    <div class="search-wrapper">
+      <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="searchBox" placeholder="Pesquisar ou filtrar ficheiros por nome..." oninput="fi(this.value)">
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <button onclick="ea()">Expandir tudo</button>
+    <button onclick="ca()">Colapsar tudo</button>
+    <button class="btn-primary" onclick="cm()">Copiar Link</button>
+  </div>
+
+  <div class="tree-container" id="tree">
+    <div class="n" data-name="conhecimento interno"><div class="r"><span class="t open" onclick="tog(this)">&#9654;</span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="fn">Conhecimento Interno</span><span class="m font-mono">5 itens</span></div><div class="ch"><div class="n" data-name="gerais"><div class="r"><span class="t open" onclick="tog(this)">&#9654;</span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="fn">Gerais</span><span class="m font-mono">3 itens</span></div><div class="ch"><div class="n" data-name="notas da reunião (quintas-feiras - 2025) / atas"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1U4x5ZvRFqs5Odw_hA4MohVUFlI_WkmlH/view?usp=drivesdk" target="_blank" rel="noopener">Notas da reunião (Quintas-feiras - 2025) / atas</a></span><span class="m font-mono"></span></div></div><div class="n" data-name="okr spreadsheet - teamlyzer"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1gb87T0vrL0ey6hO-qBvc9wIM15XyrVor/view?usp=drivesdk" target="_blank" rel="noopener">OKR Spreadsheet - Teamlyzer</a></span><span class="m font-mono"></span></div></div><div class="n" data-name="weekly meeting - teamlyzer"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1Edk5vhX70gKjJU0ejdKToaGcFCQmYRHo/view?usp=drivesdk" target="_blank" rel="noopener">Weekly meeting - Teamlyzer</a></span><span class="m font-mono"></span></div></div></div></div><div class="n" data-name="marketing"><div class="r"><span class="t open" onclick="tog(this)">&#9654;</span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="fn">Marketing</span><span class="m font-mono">1 itens</span></div><div class="ch"><div class="n" data-name="clientes - artigos"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1RmVOZA59x2M92mZ_sIDYOnp-axfXfKGM/view?usp=drivesdk" target="_blank" rel="noopener">Clientes - Artigos</a></span><span class="m font-mono"></span></div></div></div></div><div class="n" data-name="onboarding"><div class="r"><span class="t open" onclick="tog(this)">&#9654;</span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="fn">Onboarding</span><span class="m font-mono">3 itens</span></div><div class="ch"><div class="n" data-name="intro à equipa de acc e suport"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1QENUMRoadrqLiIQbJTNCYPrjL__O0dTs/view?usp=drivesdk" target="_blank" rel="noopener">Intro à Equipa de Acc e Suport</a></span><span class="m font-mono"></span></div></div><div class="n" data-name="introdução ao discord"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1Myh5rOmz3q9JWWuwEwmeQsQ1p-e9fHFO/view?usp=drivesdk" target="_blank" rel="noopener">Introdução ao Discord</a></span><span class="m font-mono"></span></div></div><div class="n" data-name="introdução ao teamlyzer e à equipa"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/15WGfaNQbAW8elYPVqjEhV17Xrw90kWb_/view?usp=drivesdk" target="_blank" rel="noopener">Introdução ao Teamlyzer e à equipa</a></span><span class="m font-mono"></span></div></div></div></div><div class="n" data-name="sales"><div class="r"><span class="t open" onclick="tog(this)">&#9654;</span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="fn">Sales</span><span class="m font-mono">1 itens</span></div><div class="ch"><div class="n" data-name="company profile_template"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1lh5vxVKZ_diHqKZJFm1e0AvO5XczJHK0/view?usp=drivesdk" target="_blank" rel="noopener">Company Profile_Template</a></span><span class="m font-mono"></span></div></div></div></div><div class="n" data-name="suporte"><div class="r"><span class="t open" onclick="tog(this)">&#9654;</span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="fn">Suporte</span><span class="m font-mono">2 itens</span></div><div class="ch"><div class="n" data-name="email templates - suporte"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://docs.google.com/document/d/17TjU9wUwAGeqvFdU_y_I4bwQ0rIb5jlBsI4hfp-1TnM/edit?usp=drivesdk" target="_blank" rel="noopener">Email Templates - Suporte</a></span><span class="m font-mono">11 KB</span></div></div><div class="n" data-name="job ads crawler"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/18i1jEgvrZcfLTFaYszZN-eOLeXWEx9Pl/view?usp=drivesdk" target="_blank" rel="noopener">Job ads crawler</a></span><span class="m font-mono"></span></div></div></div></div></div></div><div class="n" data-name="partilha externa (b2c e eventos)"><div class="r"><span class="t open" onclick="tog(this)">&#9654;</span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="fn">Partilha Externa (B2C e Eventos)</span><span class="m font-mono">1 itens</span></div><div class="ch"><div class="n" data-name="teamlyzer-2026"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1-FZL6LzNXQ5dDo7lZSaePe-cIne9Q1zs/view?usp=drivesdk" target="_blank" rel="noopener">Teamlyzer-2026</a></span><span class="m font-mono"></span></div></div></div></div><div class="n" data-name="partilha externa (clientes)"><div class="r"><span class="t open" onclick="tog(this)">&#9654;</span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="fn">Partilha Externa (Clientes)</span><span class="m font-mono">3 itens</span></div><div class="ch"><div class="n" data-name="templates de reports"><div class="r"><span class="t open" onclick="tog(this)">&#9654;</span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="fn">Templates de Reports</span><span class="m font-mono">18 itens</span></div><div class="ch"><div class="n" data-name="clientsb2b - linkedin - details.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/12CpDiE4HYcSS_qf19bJ9iehcOYNNHvV-/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - linkedin - details.html</a></span><span class="m font-mono">13 KB</span></div></div><div class="n" data-name="clientsb2b - linkedin.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/10-6qSljFhxKLv6L0IIFTjov9B4Do_Wbo/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - linkedin.html</a></span><span class="m font-mono">7 KB</span></div></div><div class="n" data-name="clientsb2b - marketing.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1bu5RC3m5MF1bTmZX3fll1mMxqpmn6L6J/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - marketing.html</a></span><span class="m font-mono">16 KB</span></div></div><div class="n" data-name="clientsb2b - meal.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1Zn4VcZzut5WeNqdK4P2Lici8hhoyeewI/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - meal.html</a></span><span class="m font-mono">23 KB</span></div></div><div class="n" data-name="clientsb2b - office tours.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1dg48UbKjrfJymgrLlqN-lipITKGzTjbR/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - office tours.html</a></span><span class="m font-mono">22 KB</span></div></div><div class="n" data-name="clientsb2b - old i.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1ELfFxm8FD6A1j7W0zRVYN0VhVb-DXQF8/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - old I.html</a></span><span class="m font-mono">14 KB</span></div></div><div class="n" data-name="clientsb2b - old ii.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1g_2XWwd665eQeEKNYs9kbb5PMeqgI5wQ/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - old II.html</a></span><span class="m font-mono">11 KB</span></div></div><div class="n" data-name="clientsb2b - performance - details - old.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1jNATCljJ0uxdh9iuCKn3FcZuLZSTyavD/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - performance - details - old.html</a></span><span class="m font-mono">25 KB</span></div></div><div class="n" data-name="clientsb2b - performance - details.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1_GfcaoLdgQByhNgu_hKbAAL5a86PQRPD/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - performance - details.html</a></span><span class="m font-mono">21 KB</span></div></div><div class="n" data-name="clientsb2b - performance.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1pXEjgK35KzZ-2R8u40kxp37ZnDtnQoyI/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - performance.html</a></span><span class="m font-mono">13 KB</span></div></div><div class="n" data-name="clientsb2b - retention.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1WyuC7kx7H6buj9cSM5g9szugdLnvVkSH/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - retention.html</a></span><span class="m font-mono">12 KB</span></div></div><div class="n" data-name="clientsb2b - reviews.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1tXOaLGn--uy2S4TrQimxojyEqjUxy22t/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - reviews.html</a></span><span class="m font-mono">37 KB</span></div></div><div class="n" data-name="clientsb2b - salary.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1QLfDdzndr84tYJimdBR0GdvwfbcggQeo/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - salary.html</a></span><span class="m font-mono">16 KB</span></div></div><div class="n" data-name="clientsb2b - stack -ai.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/14IqYNBkt30FUvESzDAUsj_Fy4PiTsWgx/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - stack -AI.html</a></span><span class="m font-mono">18 KB</span></div></div><div class="n" data-name="clientsb2b - stack.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1kE8sNMU3YfzuKVLaxQwOCRceq19eh4w2/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b - stack.html</a></span><span class="m font-mono">14 KB</span></div></div><div class="n" data-name="clientsb2b.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1Byyh2IE6N8IeQLW9fXrJWAW1LpwTwYrZ/view?usp=drivesdk" target="_blank" rel="noopener">clientsb2b.html</a></span><span class="m font-mono">31 KB</span></div></div><div class="n" data-name="trainees.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1FwwrDBnVpZcW2T1mFaudRWgSslDfln8B/view?usp=drivesdk" target="_blank" rel="noopener">trainees.html</a></span><span class="m font-mono">15 KB</span></div></div><div class="n" data-name="unicornsb2b.html"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1hPGSiyYiGh6uBb8Xuu0JoIPNsxkAcJK7/view?usp=drivesdk" target="_blank" rel="noopener">unicornsb2b.html</a></span><span class="m font-mono">22 KB</span></div></div></div></div><div class="n" data-name="capgemini portugal @ teamlyzer metrics"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://drive.google.com/file/d/1LvW7zAXVV68xis5tYQo5hfOhR6Vqq0Gk/view?usp=drivesdk" target="_blank" rel="noopener">Capgemini Portugal @ Teamlyzer metrics</a></span><span class="m font-mono"></span></div></div><div class="n" data-name="descrições de it"><div class="r"><span class="s"></span><span class="i"><svg class="svg-ic" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg></span><span class="fl"><a href="https://docs.google.com/document/d/13ELw6Vok5IG7vyXh56K0sXKuEx9sesyZITp62FRUnmE/edit?usp=drivesdk" target="_blank" rel="noopener">Descrições de IT</a></span><span class="m font-mono">2 KB</span></div></div></div></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Link copiado com sucesso!</div>
+
+<script>
+// Descodifica o token JWT da Google no browser (sem servidor)
+function decodeJwt(token) {
+  try {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
+  } catch(e) { return null; }
+}
+
+function handleCredentialResponse(response) {
+  var payload = decodeJwt(response.credential);
+  if (payload && payload.email) {
+    var email = payload.email.toLowerCase();
+    var allowedDomain = "teamlyzer.com".toLowerCase().trim();
+
+    if (email.endsWith("@" + allowedDomain) || email === allowedDomain) {
+      // Sucesso! Mostra o conteudo e esconde o login
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app-content').style.display = 'block';
+      // Inicia colapsado para ficar mais limpo
+      ca(); 
+    } else {
+      var err = document.getElementById('error-box');
+      err.innerText = "Acesso Negado: O email " + email + " nao pertence ao dominio " + allowedDomain;
+      err.style.display = 'block';
+    }
+  }
+}
+
+function tog(e){
+  var ch = e.closest('.n').querySelector('.ch');
+  if(!ch) return;
+  e.classList.toggle('open');
+  ch.classList.toggle('collapsed');
+}
+function ea(){
+  document.querySelectorAll('.t').forEach(t => t.classList.add('open'));
+  document.querySelectorAll('.ch').forEach(c => c.classList.remove('collapsed'));
+}
+function ca(){
+  document.querySelectorAll('.t').forEach(t => t.classList.remove('open'));
+  document.querySelectorAll('.ch').forEach(c => c.classList.add('collapsed'));
+}
+function fi(q){
+  q = q.toLowerCase().trim();
+  document.querySelectorAll('.n').forEach(n => {
+    if(!q){ n.style.display = ''; return; }
+    var name = (n.dataset.name || '');
+    if(name.includes(q)){
+      n.style.display = '';
+      var p = n.parentElement.closest('.n');
+      while(p){
+        p.style.display = '';
+        var t = p.querySelector('.t');
+        if(t) t.classList.add('open');
+        var ch = p.querySelector('.ch');
+        if(ch) ch.classList.remove('collapsed');
+        p = p.parentElement.closest('.n');
+      }
+    } else { n.style.display = 'none'; }
+  });
+}
+function cm(){
+  navigator.clipboard.writeText(window.location.href).then(()=>{
+    var t = document.getElementById('toast');
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2000);
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+# Teamlyzer - Indice Drive
+
+_Atualizado: 2026-05-26 15:27 UTC_
+
+- **Conhecimento Interno/**
+  - **Gerais/**
+    - [Notas da reunião (Quintas-feiras - 2025) / atas](https://drive.google.com/file/d/1U4x5ZvRFqs5Odw_hA4MohVUFlI_WkmlH/view?usp=drivesdk)
+    - [OKR Spreadsheet - Teamlyzer](https://drive.google.com/file/d/1gb87T0vrL0ey6hO-qBvc9wIM15XyrVor/view?usp=drivesdk)
+    - [Weekly meeting - Teamlyzer](https://drive.google.com/file/d/1Edk5vhX70gKjJU0ejdKToaGcFCQmYRHo/view?usp=drivesdk)
+  - **Marketing/**
+    - [Clientes - Artigos](https://drive.google.com/file/d/1RmVOZA59x2M92mZ_sIDYOnp-axfXfKGM/view?usp=drivesdk)
+  - **Onboarding/**
+    - [Intro à Equipa de Acc e Suport](https://drive.google.com/file/d/1QENUMRoadrqLiIQbJTNCYPrjL__O0dTs/view?usp=drivesdk)
+    - [Introdução ao Discord](https://drive.google.com/file/d/1Myh5rOmz3q9JWWuwEwmeQsQ1p-e9fHFO/view?usp=drivesdk)
+    - [Introdução ao Teamlyzer e à equipa](https://drive.google.com/file/d/15WGfaNQbAW8elYPVqjEhV17Xrw90kWb_/view?usp=drivesdk)
+  - **Sales/**
+    - [Company Profile_Template](https://drive.google.com/file/d/1lh5vxVKZ_diHqKZJFm1e0AvO5XczJHK0/view?usp=drivesdk)
+  - **Suporte/**
+    - [Email Templates - Suporte](https://docs.google.com/document/d/17TjU9wUwAGeqvFdU_y_I4bwQ0rIb5jlBsI4hfp-1TnM/edit?usp=drivesdk)
+    - [Job ads crawler](https://drive.google.com/file/d/18i1jEgvrZcfLTFaYszZN-eOLeXWEx9Pl/view?usp=drivesdk)
+- **Partilha Externa (B2C e Eventos)/**
+  - [Teamlyzer-2026](https://drive.google.com/file/d/1-FZL6LzNXQ5dDo7lZSaePe-cIne9Q1zs/view?usp=drivesdk)
+- **Partilha Externa (Clientes)/**
+  - **Templates de Reports/**
+    - [clientsb2b - linkedin - details.html](https://drive.google.com/file/d/12CpDiE4HYcSS_qf19bJ9iehcOYNNHvV-/view?usp=drivesdk)
+    - [clientsb2b - linkedin.html](https://drive.google.com/file/d/10-6qSljFhxKLv6L0IIFTjov9B4Do_Wbo/view?usp=drivesdk)
+    - [clientsb2b - marketing.html](https://drive.google.com/file/d/1bu5RC3m5MF1bTmZX3fll1mMxqpmn6L6J/view?usp=drivesdk)
+    - [clientsb2b - meal.html](https://drive.google.com/file/d/1Zn4VcZzut5WeNqdK4P2Lici8hhoyeewI/view?usp=drivesdk)
+    - [clientsb2b - office tours.html](https://drive.google.com/file/d/1dg48UbKjrfJymgrLlqN-lipITKGzTjbR/view?usp=drivesdk)
+    - [clientsb2b - old I.html](https://drive.google.com/file/d/1ELfFxm8FD6A1j7W0zRVYN0VhVb-DXQF8/view?usp=drivesdk)
+    - [clientsb2b - old II.html](https://drive.google.com/file/d/1g_2XWwd665eQeEKNYs9kbb5PMeqgI5wQ/view?usp=drivesdk)
+    - [clientsb2b - performance - details - old.html](https://drive.google.com/file/d/1jNATCljJ0uxdh9iuCKn3FcZuLZSTyavD/view?usp=drivesdk)
+    - [clientsb2b - performance - details.html](https://drive.google.com/file/d/1_GfcaoLdgQByhNgu_hKbAAL5a86PQRPD/view?usp=drivesdk)
+    - [clientsb2b - performance.html](https://drive.google.com/file/d/1pXEjgK35KzZ-2R8u40kxp37ZnDtnQoyI/view?usp=drivesdk)
+    - [clientsb2b - retention.html](https://drive.google.com/file/d/1WyuC7kx7H6buj9cSM5g9szugdLnvVkSH/view?usp=drivesdk)
+    - [clientsb2b - reviews.html](https://drive.google.com/file/d/1tXOaLGn--uy2S4TrQimxojyEqjUxy22t/view?usp=drivesdk)
+    - [clientsb2b - salary.html](https://drive.google.com/file/d/1QLfDdzndr84tYJimdBR0GdvwfbcggQeo/view?usp=drivesdk)
+    - [clientsb2b - stack -AI.html](https://drive.google.com/file/d/14IqYNBkt30FUvESzDAUsj_Fy4PiTsWgx/view?usp=drivesdk)
+    - [clientsb2b - stack.html](https://drive.google.com/file/d/1kE8sNMU3YfzuKVLaxQwOCRceq19eh4w2/view?usp=drivesdk)
+    - [clientsb2b.html](https://drive.google.com/file/d/1Byyh2IE6N8IeQLW9fXrJWAW1LpwTwYrZ/view?usp=drivesdk)
+    - [trainees.html](https://drive.google.com/file/d/1FwwrDBnVpZcW2T1mFaudRWgSslDfln8B/view?usp=drivesdk)
+    - [unicornsb2b.html](https://drive.google.com/file/d/1hPGSiyYiGh6uBb8Xuu0JoIPNsxkAcJK7/view?usp=drivesdk)
+  - [Capgemini Portugal @ Teamlyzer metrics](https://drive.google.com/file/d/1LvW7zAXVV68xis5tYQo5hfOhR6Vqq0Gk/view?usp=drivesdk)
+  - [Descrições de IT](https://docs.google.com/document/d/13ELw6Vok5IG7vyXh56K0sXKuEx9sesyZITp62FRUnmE/edit?usp=drivesdk)
