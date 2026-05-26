@@ -15,11 +15,6 @@ from googleapiclient.discovery import build
 # ---------------------------------------------------------------------------
 #  Configuracao (variaveis de ambiente)
 # ---------------------------------------------------------------------------
-# GOOGLE_CREDENTIALS_JSON  -> conteudo JSON da service account key
-# DRIVE_FOLDER_ID          -> ID da pasta raiz a indexar
-# OUTPUT_DIR               -> pasta onde guardar os ficheiros (default: "public")
-# COMPANY_NAME             -> nome da empresa (aparece no titulo)
-
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
 
@@ -35,12 +30,8 @@ def get_drive_service():
 
 
 def fetch_all_files(service, folder_id):
-    """Busca recursivamente todos os ficheiros dentro da pasta."""
+    """Busca recursivamente todos os ficheiros dentro da pasta, com suporte a Shared Drives."""
     files = []
-    page_token = None
-
-    # Buscar tudo que esta dentro desta pasta (e sub-pastas)
-    # Usamos uma query que percorre por parents
     queue = [folder_id]
     visited = set()
 
@@ -59,8 +50,8 @@ def fetch_all_files(service, folder_id):
                     fields="nextPageToken, files(id, name, mimeType, parents, webViewLink, size, modifiedTime)",
                     pageSize=1000,
                     pageToken=page_token,
-                    supportsAllDrives=True,
-                    includeItemsFromAllDrives=True,
+                    supportsAllDrives=True,  # Crucial para Discos Partilhados
+                    includeItemsFromAllDrives=True,  # Crucial para Discos Partilhados
                 )
                 .execute()
             )
@@ -94,6 +85,7 @@ def build_tree(files, root_folder_id):
         if parent and parent in by_id:
             by_id[parent]["children"].append(by_id[fid])
         else:
+            # Se o parent não está na lista trazida, este nó passa a ser uma raiz local
             roots.append(by_id[fid])
 
     def sort_nodes(nodes):
