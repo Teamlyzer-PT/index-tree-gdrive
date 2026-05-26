@@ -30,7 +30,7 @@ def get_drive_service():
 
 
 def fetch_all_files(service, folder_id):
-    """Busca recursivamente todos os ficheiros dentro da pasta, com suporte a Shared Drives."""
+    """Busca recursivamente todos os ficheiros dentro da pasta, com suporte total a Shared Drives."""
     files = []
     queue = [folder_id]
     visited = set()
@@ -43,18 +43,41 @@ def fetch_all_files(service, folder_id):
 
         page_token = None
         while True:
-            resp = (
-                service.files()
-                .list(
-                    q=f"'{current}' in parents and trashed = false",
-                    fields="nextPageToken, files(id, name, mimeType, parents, webViewLink, size, modifiedTime)",
-                    pageSize=1000,
-                    pageToken=page_token,
-                    supportsAllDrives=True,  # Crucial para Discos Partilhados
-                    includeItemsFromAllDrives=True,  # Crucial para Discos Partilhados
+            # Corrigido: Incluídos os parâmetros de suporte a Shared Drives em todas as queries
+            try:
+                resp = (
+                    service.files()
+                    .list(
+                        q=f"'{current}' in parents and trashed = false",
+                        fields="nextPageToken, files(id, name, mimeType, parents, webViewLink, size, modifiedTime)",
+                        pageSize=1000,
+                        pageToken=page_token,
+                        supportsAllDrives=True,
+                        includeItemsFromAllDrives=True,
+                    )
+                    .execute()
                 )
-                .execute()
-            )
+            except Exception as e:
+                # Se falhar por ser a raiz de um Shared Drive, tenta listar de forma alternativa
+                print(f"Aviso na listagem de {current}: {e}. A tentar modo alternativo...")
+                try:
+                    resp = (
+                        service.files()
+                        .list(
+                            q=f"corpora='drive' and driveId='{current}' and trashed = false" if current == folder_id else f"'{current}' in parents and trashed = false",
+                            fields="nextPageToken, files(id, name, mimeType, parents, webViewLink, size, modifiedTime)",
+                            pageSize=1000,
+                            pageToken=page_token,
+                            supportsAllDrives=True,
+                            includeItemsFromAllDrives=True,
+                            corpora="drive" if current == folder_id else None,
+                            driveId=current if current == folder_id else None,
+                        )
+                        .execute()
+                    )
+                except Exception as e2:
+                    print(f"Erro crítico ao listar {current}: {e2}")
+                    break
 
             batch = resp.get("files", [])
             files.extend(batch)
@@ -85,7 +108,6 @@ def build_tree(files, root_folder_id):
         if parent and parent in by_id:
             by_id[parent]["children"].append(by_id[fid])
         else:
-            # Se o parent não está na lista trazida, este nó passa a ser uma raiz local
             roots.append(by_id[fid])
 
     def sort_nodes(nodes):
@@ -251,7 +273,7 @@ body{{background:var(--bg);color:var(--tx);font-family:var(--sn);min-height:100v
 header{{padding:2.5rem 2rem 1.5rem;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap}}
 header h1{{font-family:var(--mn);font-weight:600;font-size:1.4rem;letter-spacing:-.02em;color:var(--ac)}}
 header h1 span{{color:var(--td);font-weight:300}}
-.stats{{margin-left:auto;font-family:var(--mn);font-size:.7rem;color:var(--td);text-align:right;line-height:1.6}}
+.stats{{margin-left:auto;font-family:var(--mn);font-size:.7rem;color:var(--td);text-align:right;line-height:16}}
 .bar{{padding:.8rem 2rem;border-bottom:1px solid var(--bd);display:flex;gap:.8rem;align-items:center;flex-wrap:wrap}}
 .bar button{{background:var(--sf);color:var(--td);border:1px solid var(--bd);padding:.45rem 1rem;border-radius:5px;font-family:var(--mn);font-size:.75rem;cursor:pointer;transition:all .15s}}
 .bar button:hover{{color:var(--tx);border-color:var(--td)}}
