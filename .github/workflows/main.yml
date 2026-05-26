@@ -1,60 +1,41 @@
-name: Atualizar Drive Tree
+name: Atualizar Indice do Google Drive
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    # Corre automaticamente todas as noites a meia-noite
+    - cron: '0 0 * * *'
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+    # Permite-te clicar no botao "Run workflow" para atualizar quando quiseres
 
 jobs:
-  build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout do código
+      - name: Checkout do codigo
         uses: actions/checkout@v4
 
-      - name: Configurar Python
+      - name: Configurar o Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-          cache: 'pip'
+          python-python: '3.10'
 
-      - name: Instalar dependências
+      - name: Instalar Dependencias
         run: |
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            echo "Aviso: requirements.txt não encontrado!"
-          fi
+          python -m pip install --upgrade pip
+          pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
 
-      - name: Executar o script do Drive Tree
+      - name: Executar Script Python e Gerar Pagina Protegida
+        run: python generate.py
         env:
           GOOGLE_CREDENTIALS_JSON: ${{ secrets.GOOGLE_CREDENTIALS_JSON }}
           DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
-          COMPANY_NAME: ${{ vars.COMPANY_NAME }}
-        run: |
-          python generate.py
-
-      - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v5
-
-      - name: Fazer upload dos ficheiros gerados
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Alterado de '.' para 'public' porque o generate.py guarda tudo lá dentro
-          path: 'public'
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          COMPANY_NAME: "Teamlyzer"
+          ALLOWED_DOMAIN: "teamlyzer.com"
 
       - name: Publicar no GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
